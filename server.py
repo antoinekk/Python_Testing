@@ -45,6 +45,11 @@ def create_app(config):
             else:
                 flash("This is not a valid email. Try again.")
             return render_template('index.html'), 403
+    
+    @app.route('/clubsPoints')
+    def clubsPoints():
+        all_clubs = sorted(clubs, key=lambda club: club['name'])
+        return render_template('clubs.html', clubs=all_clubs)
 
 
     @app.route('/book/<competition>/<club>')
