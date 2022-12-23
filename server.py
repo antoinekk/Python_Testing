@@ -68,24 +68,30 @@ def create_app(config):
         competition = [c for c in competitions if c['name'] == request.form['competition']][0]
         club = [c for c in clubs if c['name'] == request.form['club']][0]
 
-        placesRequired = int(request.form['places'])
+        try:
 
-        if placesRequired > int(competition['numberOfPlaces']):
-            flash("There are not enough places available.")
-        
-        elif placesRequired > int(club['points']):
-            flash("You don't have enough points.")
+            placesRequired = int(request.form['places'])
 
-        elif placesRequired > 12:
-            flash("You can't purchase more than 12 places.")
+            if placesRequired > int(competition['numberOfPlaces']):
+                flash("There are not enough places available.")
+            
+            elif placesRequired > int(club['points']):
+                flash("You do not have enough points.")
 
-        else:
+            elif placesRequired > 12:
+                flash("You cannot purchase more than 12 places.")
+            
+            else:
+                competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+                club['points'] = int(club['points']) - placesRequired
+                flash("Booking complete!")
+                return render_template('welcome.html', club=club, competitions=competitions)
 
-            competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-            club['points'] = int(club['points']) - placesRequired
-            flash("Booking complete!")
-        
-        return render_template('welcome.html', club=club, competitions=competitions)
+        except ValueError as message:
+            flash(message)
+
+        return render_template('welcome.html', club=club, competitions=competitions), 400
+                
 
 
     # TODO: Add route for points display
